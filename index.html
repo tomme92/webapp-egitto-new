@@ -1,152 +1,67 @@
 <!doctype html>
 <html lang="it">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-  <meta name="theme-color" content="#111111">
-  <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <link rel="manifest" href="manifest.webmanifest">
-  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
-  <title>Saqqara & Dahshur — Audioguida</title>
-  <style>
-    :root{--bg:#111;--card:#1c1c1e;--text:#f5f5f7;--muted:#a1a1a6;--accent:#d6a85f;--ok:#59c47a}
-    *{box-sizing:border-box} body{margin:0;background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","Helvetica Neue",Arial,sans-serif}
-    #map{height:54vh;min-height:360px}
-    header{padding:14px 16px calc(10px + env(safe-area-inset-top));position:relative;z-index:1000;background:rgba(17,17,17,.96)}
-    h1{font-size:20px;margin:0 0 3px}.sub{font-size:12px;color:var(--muted)}
-    .panel{padding:12px 14px 24px;background:var(--bg)}
-    .row{display:flex;gap:8px;align-items:center;overflow:auto;padding-bottom:8px}
-    button,.pill{border:0;border-radius:12px;padding:10px 13px;background:#2c2c2e;color:var(--text);font-weight:600;font-size:14px;white-space:nowrap}
-    button.active{background:var(--accent);color:#111}.primary{background:var(--ok);color:#07100a}
-    .card{background:var(--card);border-radius:18px;padding:15px;margin-top:8px}
-    .title{font-size:19px;font-weight:700}.meta{color:var(--muted);font-size:12px;margin-top:3px}
-    .desc{font-size:14px;line-height:1.45;margin:10px 0;color:#e8e8ea}
-    .actions{display:flex;gap:8px}.actions button{flex:1}
-    .status{font-size:12px;color:var(--muted);margin-top:10px}
-    .legend{font-size:12px;color:var(--muted);line-height:1.45;margin-top:10px}
-    .leaflet-control-attribution{font-size:9px}
-    .poi-dot{width:26px;height:26px;border-radius:50%;background:#111;border:3px solid var(--accent);color:#fff;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700}
-    .poi-dot.done{border-color:var(--ok)}
-  </style>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#111111">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="preconnect" href="https://unpkg.com">
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+<title>Saqqara & Dahshur — Audioguida</title>
+<style>
+:root{--bg:#111;--card:#1c1c1e;--text:#f5f5f7;--muted:#a1a1a6;--accent:#d6a85f;--ok:#59c47a;--danger:#e56b6f;--blue:#5fa8ff}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","Helvetica Neue",Arial,sans-serif}#map{height:50vh;min-height:340px}header{padding:14px 16px calc(10px + env(safe-area-inset-top));position:relative;z-index:1000;background:rgba(17,17,17,.97)}h1{font-size:20px;margin:0 0 3px}.sub{font-size:12px;color:var(--muted)}.panel{padding:12px 14px 28px;background:var(--bg)}.row{display:flex;gap:8px;align-items:center;overflow:auto;padding-bottom:8px;scrollbar-width:none}.row::-webkit-scrollbar{display:none}button,.pill{border:0;border-radius:12px;padding:10px 13px;background:#2c2c2e;color:var(--text);font-weight:600;font-size:14px;white-space:nowrap}button:active{transform:scale(.98)}button.active{background:var(--accent);color:#111}.primary{background:var(--ok);color:#07100a}.secondary{background:#30343a}.danger{background:#3a2527;color:#ffb7b9}.card{background:var(--card);border-radius:18px;padding:15px;margin-top:8px}.title{font-size:19px;font-weight:700}.meta{color:var(--muted);font-size:12px;margin-top:3px}.desc{font-size:14px;line-height:1.48;margin:10px 0;color:#e8e8ea}.actions{display:grid;grid-template-columns:1fr 1fr;gap:8px}.actions button{width:100%}.actions .wide{grid-column:1/-1}.status{font-size:12px;color:var(--muted);margin-top:10px;line-height:1.4}.legend{font-size:12px;color:var(--muted);line-height:1.45;margin-top:10px}.progress{height:5px;background:#333;border-radius:99px;overflow:hidden;margin-top:9px}.progress>i{display:block;height:100%;width:0;background:var(--accent);transition:width .2s}.visitbar{display:flex;align-items:center;justify-content:space-between;gap:8px;margin:4px 0 4px}.visitcount{font-size:12px;color:var(--muted)}.toast{position:fixed;left:12px;right:12px;bottom:calc(14px + env(safe-area-inset-bottom));z-index:3000;background:#252528;border:1px solid #45454a;border-radius:16px;padding:12px 13px;box-shadow:0 10px 30px rgba(0,0,0,.4);display:none}.toast.show{display:block}.toast strong{display:block;font-size:14px}.toast span{display:block;color:var(--muted);font-size:12px;margin-top:3px}.toast .toast-actions{display:flex;gap:8px;margin-top:9px}.toast button{flex:1}.leaflet-control-attribution{font-size:9px}.poi-dot{width:28px;height:28px;border-radius:50%;background:#111;border:3px solid var(--accent);color:#fff;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;box-shadow:0 2px 6px rgba(0,0,0,.35)}.poi-dot.done{border-color:var(--ok);background:#132318}.poi-dot.near{border-color:var(--blue);box-shadow:0 0 0 5px rgba(95,168,255,.22)}.you{stroke:#fff;fill:#5fa8ff}.segment{background:#252527;border-radius:12px;padding:10px;margin-top:8px}.segment b{font-size:13px}.segment p{font-size:13px;line-height:1.45;margin:5px 0 0;color:#ddd}.mini{font-size:11px;color:var(--muted)}.select{width:100%;background:#2c2c2e;color:#fff;border:0;border-radius:10px;padding:9px;margin-top:7px;font-size:13px}
+</style>
 </head>
 <body>
-<header>
-  <h1>Saqqara & Dahshur</h1>
-  <div class="sub">Audioguida GPS · 19 settembre · iPhone</div>
-</header>
+<header><h1>Saqqara & Dahshur</h1><div class="sub">Audioguida GPS · 19 settembre · iPhone</div></header>
 <div id="map"></div>
 <div class="panel">
-  <div class="row">
+  <div class="row" id="filters">
     <button id="allBtn" class="active" onclick="setSite('all')">Tutti</button>
-    <button onclick="setSite('saqqara')">Saqqara</button>
-    <button onclick="setSite('dahshur')">Dahshur</button>
+    <button id="saqqaraBtn" onclick="setSite('saqqara')">Saqqara</button>
+    <button id="dahshurBtn" onclick="setSite('dahshur')">Dahshur</button>
     <button onclick="locate()">◎ La mia posizione</button>
   </div>
+  <div class="visitbar"><div class="visitcount" id="visitCount">0 / 10 visitati</div><button class="danger" onclick="resetDone()">Azzera visitati</button></div>
   <div class="card" id="card">
-    <div class="title">Seleziona un punto</div>
-    <div class="meta">Tocca un marker sulla mappa oppure usa la tua posizione GPS.</div>
-    <div class="desc">La webapp associa ogni traccia al monumento. Il testo viene letto dalla voce del telefono tramite Speech Synthesis, quindi non servono file audio separati.</div>
+    <div class="title">Seleziona un punto</div><div class="meta">Tocca un marker oppure usa la tua posizione GPS.</div>
+    <div class="desc">La traccia è divisa in capitoli brevi. Puoi ascoltarli manualmente; quando il GPS entra nel raggio di un punto, la webapp lo evidenzia e ti propone la traccia senza avviare audio automaticamente.</div>
+    <div class="status">Il GPS resta nel browser. Su iPhone usa HTTPS e autorizza la posizione.</div>
   </div>
-  <div class="legend">GPS: la posizione viene usata solo nel browser per evidenziare il punto più vicino. Per il GPS su iPhone la pagina deve essere aperta tramite HTTPS.</div>
+  <div class="legend">Suggerimento: aggiungi la pagina alla schermata Home. Il servizio offline conserva app e stato “Visitato”; le mappe OpenStreetMap richiedono una prima connessione e possono non essere disponibili offline.</div>
 </div>
+<div class="toast" id="toast"><strong id="toastTitle"></strong><span id="toastText"></span><div class="toast-actions"><button class="primary" id="toastOpen">Apri punto</button><button id="toastClose">Più tardi</button></div></div>
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script>
-const pois = [
- {id:"djoser",site:"saqqara",name:"Piramide a gradoni di Djoser",lat:29.87127,lon:31.21639,r:100,
-  text:`Sei davanti a uno dei punti di svolta della storia dell'architettura. Prima di Djoser, le tombe monumentali reali erano soprattutto mastabe, strutture rettangolari sopra una camera funeraria sotterranea. Qui il progetto venne progressivamente ampliato fino a ottenere sei livelli sovrapposti: la prima grande piramide egizia e il più antico grande edificio in pietra conosciuto dell'Egitto.
-Imhotep, il personaggio tradizionalmente associato al progetto, non va immaginato soltanto come un architetto moderno: era un alto funzionario e sacerdote, e nei secoli successivi fu divinizzato. Guarda soprattutto il modo in cui l'intero complesso imita in pietra elementi che in precedenza appartenevano all'architettura effimera.
-Per fotografare: prima fai una vista ampia, poi cerca colonne, finti passaggi, cornici e texture. La piramide è il soggetto ovvio; il complesso che la circonda racconta molto di più.`},
- {id:"heb-sed",site:"saqqara",name:"Cortile Heb-Sed",lat:29.87055,lon:31.21725,r:90,
-  text:`Questo spazio è legato al festival Heb-Sed, un rito di rinnovamento della regalità. L'idea era celebrare la continuità e la forza del sovrano dopo anni di regno. Nel complesso di Djoser troviamo architetture che sembrano edifici funzionali, ma che erano soprattutto una versione monumentale e rituale del paesaggio del potere.
-Osserva le ripetizioni: porte, facciate, colonne e piccoli ambienti costruiscono una scenografia più che un quartiere abitato. È uno dei motivi per cui Saqqara va fotografata anche come architettura astratta.
-Per fotografare: cerca simmetrie, ripetizioni e ombre nette. Qui una focale medio-lunga può essere più interessante del grandangolo.`},
- {id:"imhotep",site:"saqqara",name:"Imhotep Museum",lat:29.87032,lon:31.22501,r:100,
-  text:`Il museo è il posto giusto per fermarsi a ricomporre quello che hai visto. Saqqara non è un singolo monumento: è una necropoli utilizzata per millenni, con testimonianze dall'Antico Regno fino a epoche molto più tarde.
-Dedica particolare attenzione agli oggetti legati al complesso di Djoser e agli scavi della necropoli. Non serve trasformare la visita in una seconda giornata museale: venti o trenta minuti possono bastare per orientarsi.
-Poi torna all'esterno e guarda Djoser con un occhio diverso: l'obiettivo è riconoscere nel monumento ciò che hai appena visto nei reperti.`},
- {id:"mereruka",site:"saqqara",name:"Tomba di Mereruka",lat:29.87579,lon:31.22120,r:80,
-  text:`Mereruka fu visir durante il regno di Teti, nella Sesta Dinastia. La sua mastaba è enorme e comprende circa trenta ambienti, compresi quelli destinati alla moglie e al figlio.
-Questa è una delle tappe migliori per capire perché le tombe private sono preziose anche per noi: sulle pareti non trovi solo formule funerarie, ma scene di allevamento, pesca, caccia, agricoltura e lavorazione del cibo. Sono immagini della vita quotidiana trasformate in patrimonio per l'eternità.
-Per fotografare: non cercare soltanto il rilievo più spettacolare. Guarda come gli artisti organizzano il movimento degli animali e delle persone e come il pigmento sopravvive nelle zone protette. Evita il flash e rispetta le indicazioni del sito.`},
- {id:"new-tombs",site:"saqqara",name:"New Kingdom Tombs",lat:29.87335,lon:31.21760,r:130,
-  text:`Questa parte mostra quanto sia lunga la storia di Saqqara. Anche se la nostra giornata è concentrata sull'Antico Regno, qui incontri tombe di epoche successive, comprese quelle del Nuovo Regno.
-La cosa interessante è il cambio di linguaggio: non stai semplicemente vedendo versioni più recenti delle tombe che hai appena visitato. Cambiano temi, stile, organizzazione degli spazi e rapporto con le tradizioni funerarie.
-Per fotografare: cerca dettagli che rendano evidente il passaggio da un'epoca all'altra. In una necropoli così vasta, anche il paesaggio tra un monumento e l'altro è parte della fotografia.`},
- {id:"serapeum",site:"saqqara",name:"Serapeum",lat:29.87602,lon:31.21022,r:120,
-  text:`Adesso entriamo in un mondo completamente diverso. Il Serapeum è la necropoli sotterranea dei tori sacri Apis, associati al dio Ptah, il grande dio di Memphis. Il complesso fu utilizzato per molti secoli, dal Nuovo Regno fino all'epoca tolemaica.
-Un toro Apis veniva riconosciuto attraverso caratteristiche specifiche considerate segni divini. Alla morte veniva mummificato e sepolto con grandi onori. I giganteschi sarcofagi che vedrai sono il risultato di questo culto.
-Prima di scendere, metti in pausa se vuoi fotografare. All'interno lascia che sia l'ambiente a guidarti: corridoi, nicchie, granito e vuoto. Non inseguire la quantità di foto; cerca una o due immagini che restituiscano la scala del luogo.`},
- {id:"teti",site:"saqqara",name:"Piramide di Teti / area tombe",lat:29.87645,lon:31.22215,r:100,
-  text:`La piramide di Teti appartiene alla Sesta Dinastia, quando Saqqara era ormai una necropoli reale consolidata. La piramide oggi appare molto meno impressionante di Giza, ma il contesto intorno è importantissimo perché comprende tombe private splendidamente decorate.
-Teti è anche un buon punto per capire la trasformazione dell'idea funeraria: sulle piramidi dell'Antico Regno compaiono i cosiddetti Testi delle Piramidi, formule destinate ad accompagnare e proteggere il sovrano nel viaggio nell'aldilà.
-Per fotografare: usa il paesaggio e le rovine basse per dare scala. Non cercare necessariamente la "cartolina".`},
- {id:"bent",site:"dahshur",name:"Bent Pyramid",lat:29.79028,lon:31.20917,r:160,
-  text:`Questa è la piramide che racconta un esperimento. Snefru fece costruire la piramide con un'inclinazione iniziale molto ripida, circa cinquantacinque gradi. Durante la costruzione l'angolo venne ridotto a circa quarantatré gradi: il profilo spezzato che vedi è la traccia visibile di questa modifica.
-Non è semplicemente un errore. È una testimonianza straordinaria di un processo di progettazione e adattamento su scala gigantesca. La Bent Pyramid occupa quindi un posto di transizione tra la piramide a gradoni di Djoser e le piramidi a facce lisce mature.
-Fai un giro completo. Il rivestimento calcareo superstite la rende molto diversa dalle piramidi di Giza. Cerca le linee diagonali e il contrasto tra superficie geometrica e deserto.`},
- {id:"red",site:"dahshur",name:"Red Pyramid",lat:29.80888,lon:31.20611,r:160,
-  text:`A circa un chilometro a nord della Bent Pyramid trovi la Red Pyramid, la grande soluzione riuscita di Snefru. È una delle prime vere piramidi a facce lisce completate e prepara direttamente la strada alla generazione di Cheope e Chefren.
-Il colore rosso che le dà il nome appartiene al calcare del nucleo. In origine le superfici erano rivestite da calcare bianco di Tura; gran parte del rivestimento fu asportata in epoche successive.
-Prima di entrare, guarda la massa dall'esterno. Poi affronta il corridoio interno: è basso, ripido e fisicamente impegnativo. Una volta dentro, le camere con volte aggettanti mostrano una soluzione strutturale che ritroverai, in forme diverse, anche in altre piramidi.
-Per fotografare: all'interno pensa a linee, ripetizione e compressione dello spazio. Proteggi la fotocamera dalla sabbia e fai attenzione ai passaggi.`},
- {id:"dahshur-view",site:"dahshur",name:"Punto panoramico Dahshur",lat:29.80190,lon:31.20700,r:180,
-  text:`Fermati un momento prima di ripartire. Dahshur funziona soprattutto come paesaggio: qui puoi leggere insieme la Bent Pyramid e la Red Pyramid e pensare alla sequenza tecnologica che porta a Giza.
-La storia che hai appena attraversato è quasi una linea: Djoser sperimenta la monumentalizzazione in pietra; Snefru prova diverse soluzioni; la Red Pyramid dimostra che la piramide a facce lisce può essere completata; subito dopo, la IV Dinastia porterà questa esperienza a Giza.
-Per fotografare: prova a includere molto deserto e poco cielo. La distanza tra le piramidi è parte della storia, non uno spazio vuoto.`}
+const pois=[
+{id:'djoser',site:'saqqara',name:'Piramide a gradoni di Djoser',lat:29.87127,lon:31.21639,r:100,segments:[['Contesto','Prima di Djoser le tombe reali monumentali erano soprattutto mastabe. Il progetto di Djoser venne ampliato fino a sei livelli sovrapposti: la prima grande piramide egizia e uno dei primi grandi edifici monumentali in pietra.'],['Da osservare','Imhotep è tradizionalmente associato al progetto. Guarda come il complesso traduce in pietra forme che imitano elementi dell’architettura effimera: facciate, colonne, porte e cortili.'],['Foto','Fai una vista ampia, poi cerca dettagli di colonne, finte porte, cornici e texture. La piramide è il soggetto ovvio; il complesso racconta molto di più.']]},
+{id:'heb-sed',site:'saqqara',name:'Cortile Heb-Sed',lat:29.87055,lon:31.21725,r:90,segments:[['Contesto','Il festival Heb-Sed era un rito di rinnovamento della regalità. Nel complesso di Djoser l’architettura costruisce una scenografia rituale monumentale.'],['Da osservare','Cerca ripetizioni di porte, facciate, colonne e piccoli ambienti. È un luogo particolarmente interessante per leggere Saqqara come architettura astratta.'],['Foto','Cerca simmetrie, ripetizioni e ombre nette. Una focale medio-lunga può funzionare meglio del grandangolo.']]},
+{id:'imhotep',site:'saqqara',name:'Imhotep Museum',lat:29.87032,lon:31.22501,r:100,segments:[['Contesto','Saqqara non è un singolo monumento: è una necropoli utilizzata per millenni. Il museo aiuta a ricomporre ciò che hai visto nel complesso di Djoser e negli altri settori.'],['Da osservare','Dedica particolare attenzione ai reperti legati a Djoser e agli scavi della necropoli. Una sosta breve è sufficiente per orientarsi.'],['Foto','Dopo il museo torna all’esterno e prova a riconoscere nel monumento elementi che hai appena visto nei reperti.']]},
+{id:'mereruka',site:'saqqara',name:'Tomba di Mereruka',lat:29.87579,lon:31.22120,r:80,segments:[['Contesto','Mereruka fu visir durante il regno di Teti, nella Sesta Dinastia. La mastaba comprende circa trenta ambienti, inclusi quelli destinati alla moglie e al figlio.'],['Da osservare','Le pareti mostrano allevamento, pesca, caccia, agricoltura e lavorazione del cibo. Sono scene della vita quotidiana trasformate in immagini per l’eternità.'],['Foto','Cerca il movimento di animali e persone e il pigmento conservato nelle zone protette. Evita il flash e rispetta le indicazioni del sito.']]},
+{id:'new-tombs',site:'saqqara',name:'New Kingdom Tombs',lat:29.87335,lon:31.21760,r:130,segments:[['Contesto','Questa parte dimostra quanto sia lunga la storia di Saqqara: qui si incontrano tombe di epoche successive, comprese quelle del Nuovo Regno.'],['Da osservare','Cambiano temi, stile, organizzazione degli spazi e rapporto con le tradizioni funerarie. È utile confrontarle mentalmente con le tombe dell’Antico Regno.'],['Foto','Cerca dettagli che rendano evidente il passaggio da un’epoca all’altra. Anche il paesaggio tra i monumenti è parte della fotografia.']]},
+{id:'serapeum',site:'saqqara',name:'Serapeum',lat:29.87602,lon:31.21022,r:120,segments:[['Contesto','Il Serapeum è la necropoli sotterranea dei tori sacri Apis, associati al dio Ptah. Il complesso fu utilizzato per molti secoli, dal Nuovo Regno fino all’epoca tolemaica.'],['Da osservare','I tori Apis venivano mummificati e sepolti con grandi onori. I giganteschi sarcofagi sono la traccia più evidente di questo culto.'],['Foto','Prima di scendere, prepara la fotocamera. Dentro cerca corridoi, nicchie, granito e vuoto. Meglio una o due immagini forti che molte fotografie ripetitive.']]},
+{id:'teti',site:'saqqara',name:'Piramide di Teti / area tombe',lat:29.87645,lon:31.22215,r:100,segments:[['Contesto','La piramide di Teti appartiene alla Sesta Dinastia, quando Saqqara era una necropoli reale consolidata. Intorno si trovano tombe private molto importanti.'],['Da osservare','Le piramidi dell’Antico Regno presentano i Testi delle Piramidi, formule destinate ad accompagnare e proteggere il sovrano nell’aldilà.'],['Foto','Usa il paesaggio e le rovine basse per dare scala. Non cercare necessariamente la cartolina.']]},
+{id:'bent',site:'dahshur',name:'Bent Pyramid',lat:29.79028,lon:31.20917,r:160,segments:[['Contesto','Snefru fece costruire questa piramide con un’inclinazione iniziale di circa 55°. Durante la costruzione l’angolo venne ridotto a circa 43°, creando il profilo spezzato.'],['Da osservare','È una testimonianza di progettazione e adattamento su scala gigantesca e una tappa di transizione verso le piramidi a facce lisce mature.'],['Foto','Fai un giro completo. Il rivestimento calcareo superstite la rende diversa da Giza. Cerca diagonali e contrasto tra geometria e deserto.']]},
+{id:'red',site:'dahshur',name:'Red Pyramid',lat:29.80888,lon:31.20611,r:160,segments:[['Contesto','La Red Pyramid è una delle prime grandi piramidi a facce lisce completate e prepara direttamente la strada alla generazione di Cheope e Chefren.'],['Da osservare','Il nucleo è in calcare rossastro; in origine le superfici erano rivestite da calcare bianco di Tura. All’interno osserva le camere con volte aggettanti.'],['Foto','Prima guarda la massa dall’esterno. Dentro pensa a linee, ripetizione e compressione dello spazio. Proteggi la fotocamera dalla sabbia.']]},
+{id:'dahshur-view',site:'dahshur',name:'Punto panoramico Dahshur',lat:29.80190,lon:31.20700,r:180,segments:[['Contesto','Dahshur funziona soprattutto come paesaggio: qui puoi leggere insieme Bent Pyramid e Red Pyramid e collegarle alla sequenza tecnologica che porta a Giza.'],['Da osservare','Djoser sperimenta la monumentalizzazione in pietra; Snefru prova diverse soluzioni; la Red Pyramid dimostra che la piramide a facce lisce può essere completata.'],['Foto','Includi molto deserto e poco cielo. La distanza tra le piramidi è parte della storia, non uno spazio vuoto.']]}
 ];
-
-let map=L.map('map',{zoomControl:false}).setView([29.86,31.215],12);
-L.control.zoom({position:'bottomright'}).addTo(map);
-L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{
- maxZoom:19,attribution:'© OpenStreetMap contributors'
-}).addTo(map);
-
-const markers={}; const done=JSON.parse(localStorage.getItem('donePois')||'{}'); let site='all'; let userMarker=null; let watchId=null;
-
-function icon(p){return L.divIcon({className:'',html:`<div class="poi-dot ${done[p.id]?'done':''}">${p.site==='saqqara'?'S':'D'}</div>`,iconSize:[26,26],iconAnchor:[13,13]})}
-function show(p){
- document.getElementById('card').innerHTML=`<div class="title">${p.name}</div><div class="meta">${p.site==='saqqara'?'SAQQARA':'DAHSHUR'} · raggio GPS ${p.r} m</div><div class="desc">${p.text.replace(/\n/g,'<br><br>')}</div><div class="actions"><button class="primary" onclick="speak('${p.id}')">▶ Ascolta</button><button onclick="stopSpeak()">■ Stop</button><button onclick="markDone('${p.id}')">✓ Visitato</button></div><div class="status" id="sstatus"></div>`;
- map.setView([p.lat,p.lon],16,{animate:true});
-}
-function speak(id){
- stopSpeak(); const p=pois.find(x=>x.id===id); if(!p)return;
- const u=new SpeechSynthesisUtterance(p.text); u.lang='it-IT'; u.rate=.92; u.pitch=1;
- u.onstart=()=>{const s=document.getElementById('sstatus');if(s)s.textContent='Riproduzione in corso…'};
- u.onend=()=>{const s=document.getElementById('sstatus');if(s)s.textContent='Traccia terminata.'};
- speechSynthesis.speak(u);
-}
-function stopSpeak(){speechSynthesis.cancel()}
-function markDone(id){done[id]=true;localStorage.setItem('donePois',JSON.stringify(done)); const p=pois.find(x=>x.id===id); markers[id].setIcon(icon(p));}
-function setSite(s){
- site=s; document.querySelectorAll('.row button').forEach(b=>b.classList.remove('active'));
- if(s==='all')document.getElementById('allBtn').classList.add('active');
- document.querySelectorAll('.row button').forEach(b=>{if(b.textContent.toLowerCase()===s)b.classList.add('active')});
- const visible=pois.filter(p=>site==='all'||p.site===site);
- Object.values(markers).forEach(m=>map.removeLayer(m));
- visible.forEach(p=>markers[p.id].addTo(map));
- if(visible.length){const bounds=L.latLngBounds(visible.map(p=>[p.lat,p.lon]));map.fitBounds(bounds.pad(.18))}
-}
-pois.forEach((p,i)=>{const m=L.marker([p.lat,p.lon],{icon:icon(p)}).bindTooltip(p.name,{direction:'top'}).on('click',()=>show(p));markers[p.id]=m;m.addTo(map)});
-setSite('all');
-
-function locate(){
- if(!navigator.geolocation){alert('GPS non disponibile in questo browser.');return}
- if(watchId)navigator.geolocation.clearWatch(watchId);
- watchId=navigator.geolocation.watchPosition(pos=>{
-   const ll=[pos.coords.latitude,pos.coords.longitude];
-   if(!userMarker) userMarker=L.circleMarker(ll,{radius:8,weight:3,fillOpacity:.9}).addTo(map); else userMarker.setLatLng(ll);
-   let nearest=null,dist=Infinity;
-   pois.filter(p=>site==='all'||p.site===site).forEach(p=>{const d=map.distance(ll,[p.lat,p.lon]);if(d<dist){dist=d;nearest=p}});
-   if(nearest && dist<=nearest.r){
-     show(nearest);
-     const s=document.getElementById('sstatus'); if(s)s.textContent=`Sei a circa ${Math.round(dist)} m.`;
-   } else {
-     const c=document.getElementById('card'); c.querySelector('.status')?.remove();
-     const st=document.createElement('div');st.className='status';st.textContent=nearest?`Punto più vicino: ${nearest.name} · ${Math.round(dist)} m`:'Nessun punto vicino.';c.appendChild(st);
-   }
- },err=>alert('Impossibile ottenere la posizione GPS: '+err.message),{enableHighAccuracy:true,maximumAge:5000,timeout:15000});
-}
+let map=L.map('map',{zoomControl:false}).setView([29.86,31.215],12);L.control.zoom({position:'bottomright'}).addTo(map);L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:19,attribution:'© OpenStreetMap contributors'}).addTo(map);
+const markers={};const done=JSON.parse(localStorage.getItem('donePois')||'{}');let site='all',userMarker=null,watchId=null,nearId=null,currentId=null,synthUtterance=null;
+function icon(p,near=false){return L.divIcon({className:'',html:`<div class="poi-dot ${done[p.id]?'done':''} ${near?'near':''}">${p.site==='saqqara'?'S':'D'}</div>`,iconSize:[28,28],iconAnchor:[14,14]})}
+function updateCount(){document.getElementById('visitCount').textContent=`${Object.values(done).filter(Boolean).length} / ${pois.length} visitati`}
+function renderCard(p){currentId=p.id;const visited=!!done[p.id];document.getElementById('card').innerHTML=`<div class="title">${p.name}</div><div class="meta">${p.site==='saqqara'?'SAQQARA':'DAHSHUR'} · raggio GPS ${p.r} m</div><div class="desc">${p.segments.map((s,i)=>`<div class="segment"><b>${i+1}. ${s[0]}</b><p>${s[1]}</p></div>`).join('')}</div><select class="select" id="segSelect" onchange="selectSegment(this.value)">${p.segments.map((s,i)=>`<option value="${i}">${i+1}. ${s[0]}</option>`).join('')}</select><div class="actions" style="margin-top:8px"><button class="primary" onclick="speakSegment()">▶ Ascolta</button><button onclick="stopSpeak()">■ Stop</button><button class="wide ${visited?'secondary':'primary'}" onclick="toggleDone('${p.id}')">${visited?'✓ Visitato — annulla':'○ Segna come visitato'}</button></div><div class="progress"><i id="audioProgress"></i></div><div class="status" id="sstatus">${visited?'Questo punto è segnato come visitato.':'Non ancora segnato come visitato.'}</div>`;map.setView([p.lat,p.lon],16,{animate:true})}
+function selectSegment(v){const s=document.getElementById('sstatus');if(s)s.textContent=`Capitolo selezionato: ${Number(v)+1}. Premi Ascolta.`}
+function speakSegment(){const p=pois.find(x=>x.id===currentId);if(!p)return;stopSpeak();const idx=Number(document.getElementById('segSelect')?.value||0);const u=new SpeechSynthesisUtterance(p.segments[idx][1]);u.lang='it-IT';u.rate=.92;u.pitch=1;synthUtterance=u;u.onstart=()=>{const s=document.getElementById('sstatus');if(s)s.textContent=`Ascolto: ${p.segments[idx][0]}…`};u.onend=()=>{const s=document.getElementById('sstatus');if(s)s.textContent='Capitolo terminato.';document.getElementById('audioProgress')?.style.setProperty('width','100%')};u.onboundary=()=>{document.getElementById('audioProgress')?.style.setProperty('width','50%')};speechSynthesis.speak(u)}
+function stopSpeak(){speechSynthesis.cancel();synthUtterance=null;const bar=document.getElementById('audioProgress');if(bar)bar.style.width='0%'}
+function toggleDone(id){done[id]=!done[id];if(!done[id])delete done[id];localStorage.setItem('donePois',JSON.stringify(done));const p=pois.find(x=>x.id===id);markers[id].setIcon(icon(p,id===nearId));renderCard(p);updateCount()}
+function resetDone(){if(!confirm('Azzerare tutti i punti visitati?'))return;Object.keys(done).forEach(k=>delete done[k]);localStorage.setItem('donePois','{}');pois.forEach(p=>markers[p.id].setIcon(icon(p,p.id===nearId)));updateCount();if(currentId)renderCard(pois.find(p=>p.id===currentId))}
+function setSite(s){site=s;document.querySelectorAll('#filters button').forEach(b=>b.classList.remove('active'));document.getElementById(s==='all'?'allBtn':s+'Btn').classList.add('active');Object.values(markers).forEach(m=>map.removeLayer(m));const visible=pois.filter(p=>site==='all'||p.site===site);visible.forEach(p=>markers[p.id].addTo(map));if(visible.length)map.fitBounds(L.latLngBounds(visible.map(p=>[p.lat,p.lon])).pad(.18))}
+pois.forEach(p=>{const m=L.marker([p.lat,p.lon],{icon:icon(p)}).bindTooltip(p.name,{direction:'top'}).on('click',()=>renderCard(p));markers[p.id]=m;m.addTo(map)});setSite('all');updateCount();
+function showToast(p,dist){document.getElementById('toastTitle').textContent=`Sei vicino a: ${p.name}`;document.getElementById('toastText').textContent=`Circa ${Math.round(dist)} m · punto ${p.site==='saqqara'?'Saqqara':'Dahshur'}`;document.getElementById('toast').classList.add('show');document.getElementById('toastOpen').onclick=()=>{document.getElementById('toast').classList.remove('show');renderCard(p)};document.getElementById('toastClose').onclick=()=>document.getElementById('toast').classList.remove('show');if(navigator.vibrate)navigator.vibrate([100,70,100])}
+function locate(){if(!navigator.geolocation){alert('GPS non disponibile in questo browser.');return}if(watchId)navigator.geolocation.clearWatch(watchId);watchId=navigator.geolocation.watchPosition(pos=>{const ll=[pos.coords.latitude,pos.coords.longitude];if(!userMarker)userMarker=L.circleMarker(ll,{radius:8,weight:3,fillOpacity:.9,className:'you'}).addTo(map);else userMarker.setLatLng(ll);let nearest=null,dist=Infinity;pois.filter(p=>site==='all'||p.site===site).forEach(p=>{const d=map.distance(ll,[p.lat,p.lon]);if(d<dist){dist=d;nearest=p}});if(nearest&&dist<=nearest.r){if(nearId!==nearest.id){nearId=nearest.id;pois.forEach(p=>markers[p.id].setIcon(icon(p,p.id===nearId)));showToast(nearest,dist)}else{markers[nearest.id].setIcon(icon(nearest,true))}const s=document.getElementById('sstatus');if(s&&currentId===nearest.id)s.textContent=`Sei a circa ${Math.round(dist)} m.`}else{nearId=null;pois.forEach(p=>markers[p.id].setIcon(icon(p,false)));const c=document.getElementById('card');let st=c.querySelector('.status');if(!st){st=document.createElement('div');st.className='status';c.appendChild(st)}st.textContent=nearest?`Punto più vicino: ${nearest.name} · ${Math.round(dist)} m`:'Nessun punto vicino.'}},err=>alert('Impossibile ottenere la posizione GPS: '+err.message),{enableHighAccuracy:true,maximumAge:5000,timeout:15000})}
 </script>
 </body>
 </html>

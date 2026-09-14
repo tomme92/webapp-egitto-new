@@ -1,23 +1,27 @@
-# Saqqara & Dahshur — Audioguida GPS
+SAQQARA & DAHSHUR — AUDIOGUIDA v2
 
-Webapp/PWA in italiano pensata per iPhone.
+Migliorie:
+- “Visitato” è un vero toggle: può essere segnato e annullato in qualsiasi momento.
+- Contatore dei punti visitati.
+- “Azzera visitati” per ricominciare da zero.
+- Audioguida divisa in 3 capitoli per punto: Contesto / Da osservare / Foto.
+- Selezione manuale del capitolo e lettura con Speech Synthesis.
+- GPS con rilevamento di ingresso nel raggio del punto.
+- Avviso visivo quando entri nel raggio di un nuovo punto; non parte audio automaticamente, scelta più affidabile su iPhone.
+- Vibrazione breve quando supportata dal browser.
+- Marker visitati evidenziati e marker vicino alla posizione evidenziato.
+- Stato Visitato salvato in localStorage, quindi resta anche chiudendo la pagina.
+- PWA/service worker.
 
-## Funzioni
-- mappa OpenStreetMap
-- posizione GPS del telefono
-- punti di interesse di Saqqara e Dahshur
-- selezione manuale dei monumenti
-- evidenziazione del punto più vicino entro un raggio GPS
-- audioguida tramite Speech Synthesis del browser, senza file audio esterni
-- stato "Visitato" salvato localmente
-- PWA installabile sulla schermata Home
+INSTALLAZIONE GITHUB PAGES
+1. Sostituisci i file del repository con quelli di questa cartella.
+2. Mantieni index.html, manifest.webmanifest e sw.js nella root pubblicata.
+3. Dopo il deploy apri la pagina in Safari su iPhone.
+4. Concedi la posizione quando richiesto.
+5. Aggiungi alla schermata Home per usarla come web app.
 
-## Uso su iPhone
-Il GPS del browser richiede HTTPS. Non aprire semplicemente index.html da File.
-Carica questa cartella su un hosting statico HTTPS (GitHub Pages, Netlify, Cloudflare Pages, ecc.).
-Apri l'URL in Safari -> Condividi -> Aggiungi alla schermata Home.
+NOTA OFFLINE
+L'app e lo stato Visitato vengono messi in cache. La mappa usa le tile OpenStreetMap remote: per una vera mappa offline completa servirebbe incorporare un dataset di mappe locale (ad esempio vector tiles/PMTiles) invece delle tile OSM remote. Non ho fatto una falsa promessa di “offline completo”.
 
-La mappa usa tile OpenStreetMap e quindi richiede connessione per la cartografia. I testi e la logica dell'app sono locali e la PWA può essere caricata offline; per una vera mappa offline servirebbe un pacchetto cartografico dedicato.
-
-## Nota
-Le coordinate dei monumenti sono state impostate usando fonti cartografiche pubbliche e, dove disponibile, dati del Ministero egiziano. Il GPS è un ausilio per selezionare il punto più vicino, non una guida di sicurezza o di navigazione all'interno dell'area archeologica.
+AUDIO
+Per massima compatibilità iOS la versione usa la voce del dispositivo tramite Speech Synthesis. L'audio non parte automaticamente all'arrivo GPS: Safari può limitare l'autoplay; l'avviso “Apri punto” richiede un tap e poi “Ascolta”.
